@@ -1,8 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
-import userReducer from '../features/features'
+import { configureStore } from '@reduxjs/toolkit';
+import formSlice from '../features/formSlice';
+import authReducer from '../features/enterSlice'
+
+const tokenFromLocalStorage = localStorage.getItem('authToken');
 
 export const store = configureStore({
-	reducer: {
-		user: userReducer, // pomenqtj
-	}
+  reducer: {
+    form: formSlice,
+    auth: authReducer,
+  },
+  preloadedState: {
+    auth: {
+      token: tokenFromLocalStorage,
+    },
+  },
 });
+
+export default store;

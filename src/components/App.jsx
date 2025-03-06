@@ -1,28 +1,35 @@
 import React from 'react';
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-import Feed from "./pages/feed/Feed";
-import Profile from "./pages/profile/Profile";
-import SignIn from "./pages/signIn/SignIn";
-import SignUp from "./pages/signUp/SignUp";
-import Nav from "./elements/nav/Nav";
+
+import Enter from './pages/enter/Enter'
+
 import './app.scss';
-import Search from "./pages/search/Search";
+import Profile from './pages/profile/Profile';
+import Header from './elements/header/Header';
+// import NewPost from './elements/newPost/NewPost';
+// import Posts from './elements/posts/Posts';
+
+
+
+
+
 
 
 const App = () => {
 	return (
 		<div>
 			<BrowserRouter>
-				<Nav/>
+				<Header/>
 				<Routes>
-					<Route path='/'  element={<SignIn />} />
-					<Route path='/signUp'  element={<SignUp />} />
-					<Route path='/profile' index element={<Profile />} />
-					<Route path='/feed' element={<Feed />} />
-					<Route path='/search' element={<Search />} />
+					<Route path='/'  element={<Enter />} />
+					<Route path='/profile' element={<Profile />} />
+					{/* <Route path='/profile' index element={<ProfileTetris />} /> */}
+					{/* <Route path='/feed' element={<Feed />} />
+					<Route path='/search' element={<Search />} /> */}
 					
 				</Routes>
 			</BrowserRouter>
+			{/* <Profile/> */}
 		</div>
 	);
 };
