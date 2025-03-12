@@ -15,13 +15,13 @@ const CustomPanel = () => {
           className={`tab visible ${value === 'one' ? 'active' : ''}`} 
           onClick={() => setValue('one')}
         >
-          About me
+          Posts
         </button>
         <button 
           className={`tab visible ${value === 'two' ? 'active' : ''}`} 
           onClick={() => setValue('two')}
         >
-          Posts
+          AboutMe
         </button>
         <button 
           className={`tab visible ${value === 'three' ? 'active' : ''}`} 
@@ -32,8 +32,8 @@ const CustomPanel = () => {
       </div>
 
       <div className="content">
-        {value === 'one' && <AboutMe/>}
-        {value === 'two' && <Posts />}
+        {value === 'one' && <Posts/>}
+        {value === 'two' && <AboutMe />}
         {value === 'three' && <NewPost />}
       </div>
     </div>

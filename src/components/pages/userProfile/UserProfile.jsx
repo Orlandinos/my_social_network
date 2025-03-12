@@ -5,14 +5,28 @@ import { useSelector } from "react-redux";
 import { FaCheckCircle, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 import "./userProfile.scss";
 
-const UserProfile = () => {
-    const { username } = useParams(); // Получаем username из URL
+const UserProfile = () => { 
+    const { username } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isLoadingFollow, setIsLoadingFollow] = useState(false);
+    const [userPosts, setUserPosts] = useState([]);
     const token = useSelector((state) => state.auth?.token);
+
+    const fetchUserPosts = async (userId) => {
+        if (!token || !userId) return;
+        
+        try {
+            const response = await axios.get(`http://49.13.31.246:9191/posts?user_id=${userId}`, {
+                headers: { "x-access-token": token },
+            });
+            setUserPosts(Array.isArray(response.data) ? response.data : []);
+        } catch (err) {
+            setUserPosts([]);
+        }
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -27,9 +41,10 @@ const UserProfile = () => {
                     headers: { "x-access-token": token },
                 });
 
-                console.log("Данные пользователя:", response.data);
                 setUser(response.data);
-                setIsFollowing(response.data.isFollowing); // Проверяем, подписан ли пользователь
+                if (response.data._id) {
+                    fetchUserPosts(response.data._id);
+                }
             } catch (err) {
                 setError("Ошибка при загрузке профиля");
             } finally {
@@ -40,7 +55,31 @@ const UserProfile = () => {
         fetchUserData();
     }, [token, username]);
 
-    // ✅ Подписка
+    useEffect(() => {
+        const checkFollowingStatus = async () => {
+            if (!token) return;
+            try {
+                const response = await axios.get(`http://49.13.31.246:9191/followings/${username}`, {
+                    headers: { "x-access-token": token },
+                });
+                
+                const followingList = response.data.following || [];
+                const isUserFollowing = followingList.some(user => user.username === username);
+                setIsFollowing(isUserFollowing);
+                localStorage.setItem(`isFollowing_${username}`, JSON.stringify(isUserFollowing));
+            } catch (err) {
+                console.error("Ошибка проверки подписки:", err);
+            }
+        };
+        
+        const storedFollowing = localStorage.getItem(`isFollowing_${username}`);
+        if (storedFollowing !== null) {
+            setIsFollowing(JSON.parse(storedFollowing));
+        } else {
+            checkFollowingStatus();
+        }
+    }, [token, username]);
+
     const handleFollow = async () => {
         if (!token || !user) return;
         setIsLoadingFollow(true);
@@ -50,12 +89,9 @@ const UserProfile = () => {
                 headers: { "x-access-token": token },
             });
 
-            setUser((prevUser) => ({
-                ...prevUser,
-                followers: prevUser.followers + 1,
-            }));
-
             setIsFollowing(true);
+            setUser(prevUser => ({ ...prevUser, followers: (prevUser.followers || 0) + 1 }));
+            localStorage.setItem(`isFollowing_${username}`, JSON.stringify(true));
         } catch (error) {
             console.error("Ошибка подписки:", error);
         } finally {
@@ -63,7 +99,6 @@ const UserProfile = () => {
         }
     };
 
-    // ✅ Отписка
     const handleUnfollow = async () => {
         if (!token || !user) return;
         setIsLoadingFollow(true);
@@ -73,12 +108,9 @@ const UserProfile = () => {
                 headers: { "x-access-token": token },
             });
 
-            setUser((prevUser) => ({
-                ...prevUser,
-                followers: prevUser.followers - 1,
-            }));
-
             setIsFollowing(false);
+            setUser(prevUser => ({ ...prevUser, followers: (prevUser.followers || 0) - 1 }));
+            localStorage.setItem(`isFollowing_${username}`, JSON.stringify(false));
         } catch (error) {
             console.error("Ошибка отписки:", error);
         } finally {
@@ -106,8 +138,6 @@ const UserProfile = () => {
                             <p><strong>Подписчики:</strong> {user.followers || 0}</p>
                             <p><strong>Подписки:</strong> {user.following || 0}</p>
                         </div>
-
-                        {/* Кнопки подписки и отписки */}
                         <div className="follow-section">
                             <button 
                                 className="follow-btn"
@@ -124,11 +154,8 @@ const UserProfile = () => {
                             >
                                 {isLoadingFollow && isFollowing ? "Отписка..." : "Отписаться"}
                             </button>
-
-                            {/* Если подписан, показываем текст ✔ Вы подписаны */}
                             {isFollowing && <span className="follow-status">✔ Вы подписаны</span>}
                         </div>
-
                         <p className="details">
                             <span className="location"><FaMapMarkerAlt /> {user.bio || "Нет информации"}</span>
                             <span className="joined"><FaCalendarAlt /> Age - {user.age || "Не указан"}</span>

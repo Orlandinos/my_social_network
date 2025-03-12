@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import './header.scss';
 import axios from 'axios';
 
-import Search from '../../pages/search/Search';
+import Search from '../search/Search';
 
 const Header = () => {
     const [avatar, setAvatar] = useState('');

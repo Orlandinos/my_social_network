@@ -97,7 +97,7 @@ const Profile = () => {
                     </div>
                 </div>
 
-                <div className='aboutMe'>
+                <div className='customPanel'>
                     <CustomPanel />
                 </div>
             </div>
