@@ -99,7 +99,7 @@ const Posts = () => {
 
     return (
         <div className="posts-container">
-            {posts.map((post, index) => {
+            {posts.slice().reverse().map((post, index) => {
                 const user = post.user && post.user.length > 0 ? post.user[0] : null;
                 const userName = user ? user.username : "Неизвестный пользователь";
                 const userAvatar = user?.avatar || "https://via.placeholder.com/40";
@@ -117,9 +117,22 @@ const Posts = () => {
                         <div className="post-content">
                             {post.image && <img className="post-image" src={post.image} alt="Post" />}
                             {post.video && post.video !== "any" && (
-                                <video className="post-video" controls>
-                                    <source src={post.video} type="video/mp4" />
-                                </video>
+                                post.video.includes("youtube.com/embed/") ? (
+                                    <iframe
+                                        className="post-video"
+                                        width="560"
+                                        height="315"
+                                        src={post.video}
+                                        title="YouTube video player"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    ></iframe>
+                                ) : (
+                                    <video className="post-video" controls>
+                                        <source src={post.video} type="video/mp4" />
+                                    </video>
+                                )
                             )}
                             <p className="post-description">{post.description}</p>
                         </div>

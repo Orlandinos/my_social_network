@@ -11,7 +11,6 @@ const NewPost = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-
     const token = useSelector((state) => state.auth?.token);
 
     const handleSubmit = async (e) => {
@@ -54,6 +53,12 @@ const NewPost = () => {
             setLoading(false);
         }
     };
+    const getEmbedUrl = (url) => {
+        const regex =
+            /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/embed\/)([^"&?\/\s]{11})/;
+        const match = url.match(regex);
+        return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+    };
 
     return (
         <div className="create-post-container">
@@ -88,7 +93,7 @@ const NewPost = () => {
                     className="post-input"
                     placeholder="Ссылка на видео"
                     value={video}
-                    onChange={(e) => setVideo(e.target.value)}
+                    onChange={(e) => setVideo(getEmbedUrl(e.target.value))}
                 />
                 <button type="submit" className="post-button" disabled={loading}>
                     {loading ? "Публикуется..." : "Опубликовать"}

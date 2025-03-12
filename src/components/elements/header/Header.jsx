@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import './header.scss'
+import './header.scss';
 import axios from 'axios';
 
+import Search from '../../pages/search/Search';
 
 const Header = () => {
-
     const [avatar, setAvatar] = useState('');
     const token = useSelector((state) => state.auth?.token);
 
@@ -21,7 +21,7 @@ const Header = () => {
             try {
                 const response = await axios.get("http://49.13.31.246:9191/me", {
                     headers: {
-                        'x-access-token': token, // вместо Authorization: Bearer (Это был треш!)
+                        'x-access-token': token,
                     },
                 });
                 console.log("Ответ от сервера:", response.data);
@@ -42,14 +42,14 @@ const Header = () => {
 
                 {/* Поиск */}
                 <div className="search-container">
-                    <input type="text" placeholder="Search..." className="search-input" />
+                    <Search />
                 </div>
 
                 {/* Правый блок */}
                 <div className="right-section">
                     <a href="/link1" className="nav-link">Link 1</a>
-                    <a href="/link2" className="nav-link">Link 2</a>
-                    <a href="/link3" className="nav-link">Link 3</a>
+                    <a href="/settings" className="nav-link">settings</a>
+                    <a href="/" className="nav-link">exit</a> {/* ✅ Ведет на регистрацию */}
 
                     {/* Аватарка */}
                     <a href="/profile" className="profile-link">
